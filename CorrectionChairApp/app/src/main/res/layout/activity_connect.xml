@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ConnectActivity">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="328dp"
+        android:src="@drawable/img_logo"
+        android:padding="16dp"
+        android:background="@color/colorPrimary"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Device"
+            android:textStyle="bold"
+            android:textColor="@color/colorAccent"
+            android:padding="8dp"/>
+
+        <TextView
+            android:id="@+id/tv_btn_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scan"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:layout_alignParentEnd="true"/>
+
+        <ProgressBar
+            android:id="@+id/pgb_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/tv_btn_scan"
+            android:layout_alignTop="@id/tv_btn_scan"
+            android:layout_alignBottom="@id/tv_btn_scan"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcv_device_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/tv_btn_scan"/>
+
+    </RelativeLayout>
+
+</LinearLayout>
