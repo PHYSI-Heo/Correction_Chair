@@ -56,7 +56,6 @@ public class ConnectActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        bleManager.disconnectDevice();
         bleManager.unregisterReceiver();
         bleManager.unBindService();
     }
@@ -86,6 +85,7 @@ public class ConnectActivity extends AppCompatActivity {
                     pgbScanning.setVisibility(View.VISIBLE);
                     rcvDeviceList.setEnabled(false);
                     devices.clear();
+                    deviceAdapter.setItems(devices);
                     break;
                 case BluetoothLEManager.BLE_SCAN_STOP:
                     pgbScanning.setVisibility(View.GONE);
@@ -107,7 +107,7 @@ public class ConnectActivity extends AppCompatActivity {
                     }
                     break;
                 case BluetoothLEManager.BLE_READ_CHARACTERISTIC:
-                    startActivity(new Intent(ConnectActivity.this, SetupActivity.class));
+                    startActivity(new Intent(ConnectActivity.this, ControlActivity.class));
                     LoadingDialog.dismiss();
                     break;
                 case BluetoothLEManager.BLE_DISCONNECT_DEVICE:
