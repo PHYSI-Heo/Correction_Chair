@@ -1,64 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".ConnectActivity">
 
-
     <ImageView
+        android:id="@+id/iv_logo"
         android:layout_width="wrap_content"
-        android:layout_height="328dp"
+        android:layout_height="256dp"
         android:src="@drawable/img_logo"
-        android:padding="16dp"
-        android:background="@color/colorPrimary"/>
+        android:padding="32dp"
+        android:background="@color/colorPrimary"
+        android:layout_marginBottom="8dp"/>
 
-    <RelativeLayout
+    <Button
+        android:id="@+id/btn_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_below="@id/iv_logo"
+        android:text="Register"
+        android:theme="@style/BtnTheme"
+        style="@style/Widget.AppCompat.Button.Colored"/>
+
+    <TextView
+        android:id="@+id/tv_select_device"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_below="@id/btn_register"
+        android:text="Selected Device"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/black"
+        android:layout_below="@id/tv_select_device"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <LinearLayout
+        android:id="@+id/ll_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <com.physis.correction.chair.custom.IconButton
+            android:id="@+id/btn_measure"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            app:button_backColor="@color/colorPoint1"
+            app:button_icon="@drawable/ic_air_pressure"
+            app:button_text="자세 측정"/>
+
+        <com.physis.correction.chair.custom.IconButton
+            android:id="@+id/btn_control_height"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            app:button_backColor="@color/colorPoint2"
+            app:button_icon="@drawable/ic_cushion"
+            app:button_text="높이 제어"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/pgb_loading"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_below="@id/tv_select_device"/>
+
+    <TextView
+        android:id="@+id/tv_status_msg"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_below="@id/tv_select_device"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_toEndOf="@id/pgb_loading"
+        android:gravity="center_vertical"
+        android:textColor="@color/colorAccent"
+        android:text="TEST"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcv_device_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/pgb_loading"
+        android:layout_above="@id/ll_buttons"
         android:layout_marginTop="8dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="16dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp">
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Select Device"
-            android:textStyle="bold"
-            android:textColor="@color/colorAccent"
-            android:padding="8dp"/>
 
-        <TextView
-            android:id="@+id/tv_btn_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Scan"
-            android:textColor="@color/colorAccent"
-            android:textStyle="bold"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:layout_alignParentEnd="true"/>
-
-        <ProgressBar
-            android:id="@+id/pgb_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/tv_btn_scan"
-            android:layout_alignTop="@id/tv_btn_scan"
-            android:layout_alignBottom="@id/tv_btn_scan"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rcv_device_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/tv_btn_scan"/>
-
-    </RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>

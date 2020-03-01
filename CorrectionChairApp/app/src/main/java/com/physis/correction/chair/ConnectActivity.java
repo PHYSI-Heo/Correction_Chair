@@ -14,11 +14,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.physis.correction.chair.ble.BluetoothLEManager;
+import com.physis.correction.chair.custom.IconButton;
+import com.physis.correction.chair.data.DeviceInfo;
 import com.physis.correction.chair.list.DeviceAdapter;
+import com.physis.correction.chair.utils.DBHelper;
 import com.physis.correction.chair.utils.LoadingDialog;
 
 import java.util.LinkedList;
@@ -30,13 +34,20 @@ public class ConnectActivity extends AppCompatActivity {
     public static final String HM_RX_TX = "0000ffe1-0000-1000-8000-00805f9b34fb";
 
     private RecyclerView rcvDeviceList;
-    private TextView tvBtnScan;
-    private ProgressBar pgbScanning;
+    private ProgressBar pgbLoading;
+    private Button btnRegister;
+    private IconButton iBtnMeasure, iBtnControlHeight;
+    private TextView tvStateMsg;
 
     private BluetoothLEManager bleManager = null;
+    private DBHelper dbHelper;
     private DeviceAdapter deviceAdapter;
 
-    private List<BluetoothDevice> devices = new LinkedList<>();
+    private List<DeviceInfo> devices = new LinkedList<>();
+    private DeviceInfo selectedDevice;
+    private BluetoothDevice bleDevice;
+
+    private boolean isConnected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +61,13 @@ public class ConnectActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        bleManager.scan(true, true);
+        bleManager.setHandler(handler);
+        if(devices.size() == 0){
+            tvStateMsg.setText("등록된 디바이스가 없습니다.");
+        }else{
+            tvStateMsg.setText("자세교정 디바이스를 선택하세요.");
+        }
+        deviceAdapter.setItems(devices);
     }
 
     @Override
@@ -63,16 +80,33 @@ public class ConnectActivity extends AppCompatActivity {
     private DeviceAdapter.OnSelectedPositionListener selectedPositionListener = new DeviceAdapter.OnSelectedPositionListener() {
         @Override
         public void onSelected(int position) {
-            bleManager.connectDevice(devices.get(position));
-            LoadingDialog.show(ConnectActivity.this, "Connect Device..");
+            selectedDevice = devices.get(position);
+            bleManager.disconnectDevice();
+            bleManager.scan(true, true);
         }
     };
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(v.getId() == R.id.tv_btn_scan)
-                bleManager.scan(true, true);
+            switch (v.getId()){
+                case R.id.btn_register:
+                    startActivity(new Intent(ConnectActivity.this, RegisterActivity.class));
+                    break;
+                case R.id.btn_measure:
+                    if(!isConnected){
+                        startActivity(new Intent(ConnectActivity.this, MeasureActivity.class)
+                                .putExtra("ADDR", selectedDevice.getAddress()));
+                    }
+                    break;
+                case R.id.btn_control_height:
+                    if(!isConnected){
+                        startActivity(new Intent(ConnectActivity.this, ControlActivity.class)
+                                .putExtra("ADDR", selectedDevice.getAddress())
+                                .putExtra("PRESSUREs", selectedDevice.getPressures()));
+                    }
+                    break;
+            }
         }
     };
 
@@ -82,24 +116,28 @@ public class ConnectActivity extends AppCompatActivity {
         public void handleMessage(@NonNull Message msg) {
             switch (msg.what){
                 case BluetoothLEManager.BLE_SCAN_START:
-                    pgbScanning.setVisibility(View.VISIBLE);
+                    pgbLoading.setVisibility(View.VISIBLE);
+                    tvStateMsg.setText("디바이스를 검색합니다.");
                     rcvDeviceList.setEnabled(false);
-                    devices.clear();
-                    deviceAdapter.setItems(devices);
                     break;
                 case BluetoothLEManager.BLE_SCAN_STOP:
-                    pgbScanning.setVisibility(View.GONE);
-                    rcvDeviceList.setEnabled(true);
-                    deviceAdapter.setItems(devices);
+                    if(bleDevice != null){
+                        bleManager.connectDevice(bleDevice);
+                    }else{
+                        rcvDeviceList.setEnabled(true);
+                        pgbLoading.setVisibility(View.GONE);
+                        tvStateMsg.setText("자세교정 디바이스의 상태를 확인하세요.");
+                    }
                     break;
                 case BluetoothLEManager.BLE_SCAN_DEVICE:
                     BluetoothDevice device = (BluetoothDevice) msg.obj;
-                    if(device.getName() == null || device.getName().equals(""))
-                        return;
-                    if(!devices.contains(device))
-                        devices.add(device);
+                    if(device.getAddress().equals(selectedDevice.getAddress())){
+                        bleDevice = device;
+                        bleManager.scan(false,false);
+                    }
                     break;
                 case BluetoothLEManager.BLE_CONNECT_DEVICE:
+                    tvStateMsg.setText("디바이스가 연결되었습니다.");
                     break;
                 case BluetoothLEManager.BLE_SERVICES_DISCOVERED:
                     if (!bleManager.notifyCharacteristic(HM_10_CONF, HM_RX_TX)) {
@@ -107,11 +145,14 @@ public class ConnectActivity extends AppCompatActivity {
                     }
                     break;
                 case BluetoothLEManager.BLE_READ_CHARACTERISTIC:
-                    startActivity(new Intent(ConnectActivity.this, ControlActivity.class));
-                    LoadingDialog.dismiss();
+                    pgbLoading.setVisibility(View.GONE);
+                    tvStateMsg.setText("자세측정 또는 제어를 선택하세요.");
+                    isConnected = true;
                     break;
                 case BluetoothLEManager.BLE_DISCONNECT_DEVICE:
-                    LoadingDialog.dismiss();
+                    rcvDeviceList.setEnabled(true);
+                    isConnected = false;
+                    pgbLoading.setVisibility(View.GONE);
                     break;
             }
         }
@@ -121,13 +162,9 @@ public class ConnectActivity extends AppCompatActivity {
         bleManager = BluetoothLEManager.getInstance(getApplicationContext());
         bleManager.bindService();
         bleManager.registerReceiver();
-        bleManager.setHandler(handler);
 
-        tvBtnScan = findViewById(R.id.tv_btn_scan);
-        tvBtnScan.setOnClickListener(clickListener);
-
-        pgbScanning = findViewById(R.id.pgb_scan);
-        pgbScanning.setVisibility(View.GONE);
+        dbHelper = new DBHelper(getApplicationContext());
+        devices = dbHelper.getDevices();
 
         rcvDeviceList = findViewById(R.id.rcv_device_list);
         DividerItemDecoration decoration
@@ -140,7 +177,18 @@ public class ConnectActivity extends AppCompatActivity {
         linearLayoutManager.setItemPrefetchEnabled(true);
         rcvDeviceList.setLayoutManager(linearLayoutManager);
         // Set Adapter
-        rcvDeviceList.setAdapter(deviceAdapter = new DeviceAdapter());
+        rcvDeviceList.setAdapter(deviceAdapter = new DeviceAdapter(DeviceAdapter.REGISTER_INFO));
         deviceAdapter.setOnSelectedPositionListener(selectedPositionListener);
+
+        tvStateMsg = findViewById(R.id.tv_status_msg);
+        pgbLoading = findViewById(R.id.pgb_loading);
+        pgbLoading.setVisibility(View.GONE);
+
+        btnRegister = findViewById(R.id.btn_register);
+        btnRegister.setOnClickListener(clickListener);
+        iBtnControlHeight = findViewById(R.id.btn_control_height);
+        iBtnControlHeight.setOnClickListener(clickListener);
+        iBtnMeasure = findViewById(R.id.btn_measure);
+        iBtnMeasure.setOnClickListener(clickListener);
     }
 }

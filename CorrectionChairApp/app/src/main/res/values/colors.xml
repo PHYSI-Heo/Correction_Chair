@@ -4,4 +4,7 @@
     <color name="colorPrimaryDark">#4472C4</color>
     <color name="colorAccent">#2ABDB3</color>
     <color name="colorAccentBorder">#1B968B</color>
+
+    <color name="colorPoint1">#D64742</color>
+    <color name="colorPoint2">#60AA17</color>
 </resources>

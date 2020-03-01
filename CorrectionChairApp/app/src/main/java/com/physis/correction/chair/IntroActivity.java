@@ -1,5 +1,6 @@
 package com.physis.correction.chair;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
@@ -48,7 +49,7 @@ public class IntroActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if(requestCode == REQ_APP_PERMISSION){
             // 요청 권한 허용 상태 확인
             boolean accessStatus = true;

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="IconButton">
+        <attr name="button_icon" format="reference" />
+        <attr name="button_text" format="string" />
+        <attr name="button_backColor" format="reference" />
+    </declare-styleable>
+
+</resources>

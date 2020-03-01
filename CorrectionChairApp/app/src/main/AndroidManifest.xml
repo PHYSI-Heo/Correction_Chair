@@ -14,8 +14,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ControlActivity"
-            android:theme="@style/SetupTheme"></activity>
+        <activity android:name=".MeasureActivity"
+            android:theme="@style/SetupTheme" />
+        <activity android:name=".RegisterActivity" />
+        <activity
+            android:name=".ControlActivity"
+            android:theme="@style/SetupTheme" />
         <activity android:name=".ConnectActivity" />
         <activity android:name=".IntroActivity">
             <intent-filter>
@@ -25,8 +29,7 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".ble.BluetoothLEService"/>
+        <service android:name=".ble.BluetoothLEService" />
     </application>
 
 </manifest>

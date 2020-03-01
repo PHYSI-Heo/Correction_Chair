@@ -10,11 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.physis.correction.chair.R;
+import com.physis.correction.chair.data.DeviceInfo;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class DeviceAdapter extends RecyclerView.Adapter<DeviceHolder> {
+
+    public static final int REGISTER_INFO = 1;
+    public static final int BLE_SCAN_INFO = 2;
 
     public interface OnSelectedPositionListener{
         void onSelected(int position);
@@ -26,7 +30,12 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceHolder> {
         this.listener = listener;
     }
 
-    private List<BluetoothDevice> devices = new LinkedList<>();
+    private int deviceType;
+    private List<DeviceInfo> devices = new LinkedList<>();
+
+    public DeviceAdapter(int deviceType){
+        this.deviceType = deviceType;
+    }
 
     @NonNull
     @Override
@@ -37,9 +46,13 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull DeviceHolder holder, final int position) {
-        BluetoothDevice device = devices.get(position);
+        DeviceInfo device = devices.get(position);
 
-        holder.tvDeviceName.setText(device.getName());
+        if(deviceType == REGISTER_INFO)
+            holder.tvDeviceName.setText(device.getTitle());
+        else
+            holder.tvDeviceName.setText(device.getName());
+
         holder.tvDeviceAddress.setText(device.getAddress());
 
         holder.llDeviceInfo.setOnClickListener(new View.OnClickListener() {
@@ -56,7 +69,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceHolder> {
         return devices.size();
     }
 
-    public void setItems(List<BluetoothDevice> devices){
+    public void setItems(List<DeviceInfo> devices){
         this.devices = devices;
         notifyDataSetChanged();
     }
