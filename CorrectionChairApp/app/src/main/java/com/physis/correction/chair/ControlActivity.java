@@ -107,11 +107,7 @@ public class ControlActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "설정 높이를 입력하세요.", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(etFrontLeftHeight.getText().toString().equals("0")|| etFrontRightHeight.getText().toString().equals("0")||
-                etBackLeftHeight.getText().toString().equals("0") || etBackRightHeight.getText().toString().equals("0")){
-            Toast.makeText(getApplicationContext(), "1 cm 이상의 높이를 설정하세요.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+
         bleManager.writeCharacteristic("MH" + etFrontLeftHeight.getText().toString() + ","
                 + etFrontRightHeight.getText().toString() + ","
                 + etBackLeftHeight.getText().toString() + ","
@@ -166,5 +162,11 @@ public class ControlActivity extends AppCompatActivity {
         tvStateMsg = findViewById(R.id.tv_state_msg);
 
         deviceAddress = getIntent().getStringExtra("ADDR");
+        String[] pressureList = Objects.requireNonNull(getIntent()
+                .getStringExtra("PRESSUREs")).split(",");
+        etFrontLeftHeight.setText(pressureList[0]);
+        etFrontRightHeight.setText(pressureList[1]);
+        etBackLeftHeight.setText(pressureList[2]);
+        etBackRightHeight.setText(pressureList[3]);
     }
 }

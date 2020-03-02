@@ -28,7 +28,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Front Left (Cm)"
+                android:text="Front Left (Weight)"
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold"
                 android:layout_marginStart="12dp"
@@ -50,7 +50,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:inputType="number"
-                android:hint="Cm"/>
+                android:hint="Weight"/>
 
         </LinearLayout>
 
@@ -65,7 +65,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Front Right (Cm)"
+                android:text="Front Right (Weight)"
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold"
                 android:layout_marginStart="12dp"
@@ -87,7 +87,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:inputType="number"
-                android:hint="Cm"/>
+                android:hint="Weight"/>
 
         </LinearLayout>
 
@@ -110,7 +110,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Back Left (Cm)"
+                android:text="Back Left (Weight)"
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold"
                 android:layout_marginStart="12dp"
@@ -132,7 +132,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:inputType="number"
-                android:hint="Cm"/>
+                android:hint="Weight"/>
 
         </LinearLayout>
 
@@ -147,7 +147,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Back Right (Cm)"
+                android:text="Back Right (Weight)"
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold"
                 android:layout_marginStart="12dp"
@@ -169,7 +169,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:inputType="number"
-                android:hint="Cm"/>
+                android:hint="Weight"/>
 
         </LinearLayout>
 
