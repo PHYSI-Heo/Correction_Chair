@@ -8,7 +8,7 @@
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
     android:gravity="center"
-    android:background="@color/colorAccent">
+    android:id="@+id/ll_button">
 
     <ImageView
         android:id="@+id/iv_btn_icon"

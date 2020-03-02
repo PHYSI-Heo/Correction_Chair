@@ -20,6 +20,7 @@ public class IconButton extends LinearLayout {
 
     private ImageView ivBtnIcon;
     private TextView tvBtnText;
+    private LinearLayout llButton;
 
     @SuppressLint("Recycle")
     public IconButton(Context context, @Nullable AttributeSet attrs) {
@@ -29,7 +30,7 @@ public class IconButton extends LinearLayout {
         btnText = context.obtainStyledAttributes(attrs, R.styleable.IconButton)
                 .getString(R.styleable.IconButton_button_text);
         backColorResID = context.obtainStyledAttributes(attrs, R.styleable.IconButton)
-                .getResourceId(R.styleable.IconButton_button_icon, R.color.colorAccent);
+                .getResourceId(R.styleable.IconButton_button_backColor, R.color.colorAccent);
         init(context);
     }
 
@@ -40,8 +41,11 @@ public class IconButton extends LinearLayout {
         addView(view);
 
         ivBtnIcon = view.findViewById(R.id.iv_btn_icon);
+        ivBtnIcon.setImageResource(iconResID);
         tvBtnText = view.findViewById(R.id.tv_btn_text);
+        tvBtnText.setText(btnText);
 
-        this.setBackgroundResource(backColorResID);
+        llButton = view.findViewById(R.id.ll_button);
+        llButton.setBackgroundResource(backColorResID);
     }
 }

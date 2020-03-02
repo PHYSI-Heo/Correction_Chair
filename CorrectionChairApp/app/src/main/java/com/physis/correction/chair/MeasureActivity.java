@@ -30,6 +30,7 @@ public class MeasureActivity extends AppCompatActivity {
     private BluetoothLEManager bleManager;
 
     private String deviceAddress;
+    private float pressureWeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +96,23 @@ public class MeasureActivity extends AppCompatActivity {
             showStateMessage("자세측정을 시작합니다.");
         }else if(data.equals("ED")){
             llStateMsg.setVisibility(View.GONE);
+            setCorrectionHeight();
         }else{
             showPressureValues(data.substring(1));
         }
+    }
+
+    private void setCorrectionHeight() {
+        int flValue = Integer.valueOf(tvFrontLeftValue.getText().toString());
+        int frValue = Integer.valueOf(tvFrontRightValue.getText().toString());
+        int blValue = Integer.valueOf(tvBackLeftValue.getText().toString());
+        int brValue = Integer.valueOf(tvBackRightValue.getText().toString());
+
+        int maxPressure = flValue > frValue ? flValue : frValue;
+        maxPressure = maxPressure > blValue ? maxPressure : blValue;
+        maxPressure = maxPressure > brValue ? maxPressure : brValue;
+
+
     }
 
     private void showStateMessage(String msg) {

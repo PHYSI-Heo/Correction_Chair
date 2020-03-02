@@ -65,8 +65,8 @@ public class DBHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 devices.add(new DeviceInfo(
-                        cursor.getString(cursor.getColumnIndex(COL_ADDR)),
                         cursor.getString(cursor.getColumnIndex(COL_NAME)),
+                        cursor.getString(cursor.getColumnIndex(COL_ADDR)),
                         cursor.getString(cursor.getColumnIndex(COL_PRESSURE))
                 ));
             } while (cursor.moveToNext());

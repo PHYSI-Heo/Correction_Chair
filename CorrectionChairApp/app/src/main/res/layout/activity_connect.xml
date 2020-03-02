@@ -26,6 +26,29 @@
         android:theme="@style/BtnTheme"
         style="@style/Widget.AppCompat.Button.Colored"/>
 
+    <ProgressBar
+        android:id="@+id/pgb_loading"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_below="@id/btn_register"/>
+
+    <TextView
+        android:id="@+id/tv_status_msg"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_below="@id/btn_register"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:layout_toEndOf="@id/pgb_loading"
+        android:gravity="center_vertical"
+        android:textColor="@color/colorAccent"
+        android:text="TEST"/>
+
     <TextView
         android:id="@+id/tv_select_device"
         android:layout_width="wrap_content"
@@ -34,7 +57,7 @@
         android:paddingBottom="8dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:layout_below="@id/btn_register"
+        android:layout_below="@id/tv_status_msg"
         android:text="Selected Device"
         android:textColor="@android:color/black"
         android:textStyle="bold"/>
@@ -79,35 +102,14 @@
             app:button_text="높이 제어"/>
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/pgb_loading"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_below="@id/tv_select_device"/>
-
-    <TextView
-        android:id="@+id/tv_status_msg"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:layout_below="@id/tv_select_device"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_toEndOf="@id/pgb_loading"
-        android:gravity="center_vertical"
-        android:textColor="@color/colorAccent"
-        android:text="TEST"/>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcv_device_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/pgb_loading"
+        android:layout_below="@id/tv_select_device"
         android:layout_above="@id/ll_buttons"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"/>
 

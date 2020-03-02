@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.physis.correction.chair.ble.BluetoothLEManager;
 import com.physis.correction.chair.custom.IconButton;
@@ -62,12 +63,7 @@ public class ConnectActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         bleManager.setHandler(handler);
-        if(devices.size() == 0){
-            tvStateMsg.setText("등록된 디바이스가 없습니다.");
-        }else{
-            tvStateMsg.setText("자세교정 디바이스를 선택하세요.");
-        }
-        deviceAdapter.setItems(devices);
+        setDeviceList();
     }
 
     @Override
@@ -94,16 +90,20 @@ public class ConnectActivity extends AppCompatActivity {
                     startActivity(new Intent(ConnectActivity.this, RegisterActivity.class));
                     break;
                 case R.id.btn_measure:
-                    if(!isConnected){
+                    if(isConnected){
                         startActivity(new Intent(ConnectActivity.this, MeasureActivity.class)
                                 .putExtra("ADDR", selectedDevice.getAddress()));
+                    }else{
+                        Toast.makeText(getApplicationContext(), "먼저 디바이스 연결을 진행하세요.", Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case R.id.btn_control_height:
-                    if(!isConnected){
+                    if(isConnected){
                         startActivity(new Intent(ConnectActivity.this, ControlActivity.class)
                                 .putExtra("ADDR", selectedDevice.getAddress())
                                 .putExtra("PRESSUREs", selectedDevice.getPressures()));
+                    }else{
+                        Toast.makeText(getApplicationContext(), "먼저 디바이스 연결을 진행하세요.", Toast.LENGTH_SHORT).show();
                     }
                     break;
             }
@@ -158,13 +158,22 @@ public class ConnectActivity extends AppCompatActivity {
         }
     };
 
+    private void setDeviceList(){
+        devices = dbHelper.getDevices();
+        deviceAdapter.setItems(devices);
+        if(devices.size() == 0){
+            tvStateMsg.setText("등록된 디바이스가 없습니다.");
+        }else{
+            tvStateMsg.setText("자세교정 디바이스를 선택하세요.");
+        }
+    }
+
     private void init() {
         bleManager = BluetoothLEManager.getInstance(getApplicationContext());
         bleManager.bindService();
         bleManager.registerReceiver();
 
         dbHelper = new DBHelper(getApplicationContext());
-        devices = dbHelper.getDevices();
 
         rcvDeviceList = findViewById(R.id.rcv_device_list);
         DividerItemDecoration decoration
