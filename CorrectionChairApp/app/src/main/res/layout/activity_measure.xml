@@ -212,7 +212,7 @@
         android:id="@+id/btn_control_height"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:text="높이 설정"
         android:theme="@style/BtnTheme"
         style="@style/Widget.AppCompat.Button.Colored"/>

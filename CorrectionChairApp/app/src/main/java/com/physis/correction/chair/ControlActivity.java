@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +26,8 @@ import com.physis.correction.chair.utils.DBHelper;
 import java.util.Objects;
 
 public class ControlActivity extends AppCompatActivity {
+
+    private static final String TAG = ControlActivity.class.getSimpleName();
 
     private EditText etFrontLeftHeight, etFrontRightHeight, etBackLeftHeight, etBackRightHeight;
     private Button btnControlHeight, btnZeroSetting, btnSaveHeight;
@@ -162,11 +165,13 @@ public class ControlActivity extends AppCompatActivity {
         tvStateMsg = findViewById(R.id.tv_state_msg);
 
         deviceAddress = getIntent().getStringExtra("ADDR");
-        String[] pressureList = Objects.requireNonNull(getIntent()
-                .getStringExtra("PRESSUREs")).split(",");
-        etFrontLeftHeight.setText(pressureList[0]);
-        etFrontRightHeight.setText(pressureList[1]);
-        etBackLeftHeight.setText(pressureList[2]);
-        etBackRightHeight.setText(pressureList[3]);
+        String pressure = getIntent().getStringExtra("PRESSUREs");
+        if(pressure != null && !pressure.equals("")){
+            String[] pressureList = pressure.split(",");
+            etFrontLeftHeight.setText(pressureList[0]);
+            etFrontRightHeight.setText(pressureList[1]);
+            etBackLeftHeight.setText(pressureList[2]);
+            etBackRightHeight.setText(pressureList[3]);
+        }
     }
 }

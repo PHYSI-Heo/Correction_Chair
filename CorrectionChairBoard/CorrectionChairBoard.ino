@@ -1,24 +1,17 @@
-#include <SoftwareSerial.h>
 
-#define BT_UART_RX 12
-#define BT_UART_TX 13
+#define FRONT_LEFT_VALVE  36
+#define FRONT_LEFT_PUMP   42
+#define FRONT_RIGHT_VALVE 37
+#define FRONT_RIGHT_PUMP  43
+#define BACK_LEFT_VALVE   40
+#define BACK_LEFT_PUMP    44
+#define BACK_RIGHT_VALVE  41
+#define BACK_RIGHT_PUMP   45
 
-#define FRONT_LEFT_VALVE  24
-#define FRONT_LEFT_PUMP   25
-#define FRONT_RIGHT_VALVE 26
-#define FRONT_RIGHT_PUMP  27
-#define BACK_LEFT_VALVE   28
-#define BACK_LEFT_PUMP    29
-#define BACK_RIGHT_VALVE  30
-#define BACK_RIGHT_PUMP   31
-
-#define FRONT_LEFT_PRESSURE A0
-#define FRONT_RIGHT_PRESSURE A1
-#define BACK_LEFT_PRESSURE A2
-#define BACK_RIGHT_PRESSURE A3
-
-
-SoftwareSerial bleSerial(BT_UART_RX, BT_UART_TX);
+#define FRONT_LEFT_PRESSURE A10
+#define FRONT_RIGHT_PRESSURE A11
+#define BACK_LEFT_PRESSURE A12
+#define BACK_RIGHT_PRESSURE A13
 
 String recvData = "";
 long measureTime = 3000;
@@ -27,15 +20,12 @@ int PUMP_UP = 1;
 int PUMP_STOP = 2;
 int PUMP_OUT = 3;
 unsigned long setHeight[4];
-int secondWeight = 1000;
 
 bool flControl, frControl, blControl, brControl;
 
 void setup() {
-  Serial.begin(115200);
-  bool bResult = bleEnable(9600);
-  Serial.print(F("# Bluetooth LE Enable : "));
-  Serial.println(bResult);
+  Serial.begin(9600);
+  Serial3.begin(9600);
 
   pinMode(FRONT_LEFT_VALVE, OUTPUT);
   pinMode(FRONT_LEFT_PUMP, OUTPUT);
@@ -46,20 +36,12 @@ void setup() {
   pinMode(BACK_RIGHT_VALVE, OUTPUT);
   pinMode(BACK_RIGHT_PUMP, OUTPUT);
 
-  digitalWrite(FRONT_LEFT_VALVE, HIGH);
-  digitalWrite(FRONT_LEFT_PUMP, HIGH);
-  digitalWrite(FRONT_RIGHT_VALVE, HIGH);
-  digitalWrite(FRONT_RIGHT_PUMP, HIGH);
-  digitalWrite(BACK_LEFT_VALVE, HIGH);
-  digitalWrite(BACK_LEFT_PUMP, HIGH);
-  digitalWrite(BACK_RIGHT_VALVE, HIGH);
-  digitalWrite(BACK_RIGHT_PUMP, HIGH);
-
+  Serial.print(F("Start Loop."));
 }
 
 void loop() {
-  while (bleSerial.available()) {
-    char data = bleSerial.read();
+  while (Serial3.available()) {
+    char data = Serial3.read();
     recvData += data;
     delay(1);
   }
@@ -85,20 +67,23 @@ void loop() {
     }
     recvData = "";
   }
-
   delay(50);
+}
+
+void sendMessage(String data) {
+  Serial3.print(data);
 }
 
 void setAirState(int valvePin, int pumpPin, int type) {
   if (type == 1) {                // up
-    digitalWrite(valvePin, LOW);
-    digitalWrite(pumpPin, LOW);
-  } else if (type == 2) {         // stop
-    digitalWrite(valvePin, LOW);
-    digitalWrite(pumpPin, HIGH);
-  } else {                        // out
     digitalWrite(valvePin, HIGH);
     digitalWrite(pumpPin, HIGH);
+  } else if (type == 2) {         // stop
+    digitalWrite(valvePin, HIGH);
+    digitalWrite(pumpPin, LOW);
+  } else {                        // out
+    digitalWrite(valvePin, LOW);
+    digitalWrite(pumpPin, LOW);
   }
 }
 
@@ -111,6 +96,7 @@ void setZeroPressure() {
   setAirState(BACK_LEFT_VALVE, BACK_LEFT_PUMP, PUMP_OUT);
   setAirState(BACK_RIGHT_VALVE, BACK_RIGHT_PUMP, PUMP_OUT);
   delay(3000);
+  Serial.println("# Stop Zero Pressure.");
 }
 
 void startMeasurePressure() {
@@ -128,7 +114,7 @@ void startMeasurePressure() {
                   + String(analogRead(FRONT_RIGHT_PRESSURE)) + ","
                   + String(analogRead(BACK_LEFT_PRESSURE)) + ","
                   + String(analogRead(BACK_RIGHT_PRESSURE));
-    sendMessage(data);
+    sendMessage(data.c_str());
     delay(100);
   }
   Serial.println("> Pump Stop.");
@@ -158,7 +144,7 @@ void setupHeight() {
   setAirState(FRONT_RIGHT_VALVE, FRONT_RIGHT_PUMP, PUMP_UP);
   setAirState(BACK_LEFT_VALVE, BACK_LEFT_PUMP, PUMP_UP);
   setAirState(BACK_RIGHT_VALVE, BACK_RIGHT_PUMP, PUMP_UP);
-  
+
   long startTime = millis();
   flControl = frControl = blControl = brControl = true;
   while (flControl || frControl || blControl || brControl) {
@@ -194,58 +180,14 @@ void setControlData() {
     int sepIndex = recvData.indexOf(",");
     if (sepIndex != -1)
     {
-      setHeight[position++] = recvData.substring(0, sepIndex).toFloat() * secondWeight;
+      setHeight[position++] = recvData.substring(0, sepIndex).toFloat() * measureTime;
       recvData = recvData.substring(sepIndex + 1);
       delay(5);
     }
     else
     {
-      setHeight[position] = recvData.toFloat() * secondWeight;
+      setHeight[position] = recvData.toFloat() * measureTime;
       break;
     }
   }
-}
-
-
-/*
-    ========== BLE ==========
-*/
-bool bleEnable(int baudrate) {
-  bleSerial.begin(baudrate);
-  bool connected = false;
-  for (int j = 0; j < 3; j++) {
-    sendMessage("AT");
-    if (reply().startsWith("OK")) {
-      connected = true;
-      break;
-    }
-  }
-  return connected;
-}
-
-void sendMessage(String data) {
-  bleSerial.print(data);
-}
-
-String reply() {
-  String replyData = "";
-  bool isValid = true;
-  long time = millis() + 1000;
-  while (!bleSerial.available()) {
-    if (millis() > time) {
-      isValid = false;
-      break;
-    }
-  }
-  if (isValid) {
-    while (bleSerial.available()) {
-      char data = bleSerial.read();
-      replyData += data;
-      delay(1);
-    }
-  }
-  else {
-    Serial.println(F("#(Err)Response Timeout.."));
-  }
-  return replyData;
 }

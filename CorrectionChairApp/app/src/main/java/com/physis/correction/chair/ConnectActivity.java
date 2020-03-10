@@ -69,16 +69,22 @@ public class ConnectActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        bleManager.disconnectDevice();
         bleManager.unregisterReceiver();
         bleManager.unBindService();
     }
 
     private DeviceAdapter.OnSelectedPositionListener selectedPositionListener = new DeviceAdapter.OnSelectedPositionListener() {
         @Override
-        public void onSelected(int position) {
-            selectedDevice = devices.get(position);
+        public void onSelected(final int position) {
             bleManager.disconnectDevice();
-            bleManager.scan(true, true);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    selectedDevice = devices.get(position);
+                    bleManager.scan(true, true);
+                }
+            }, 500);
         }
     };
 
@@ -123,6 +129,7 @@ public class ConnectActivity extends AppCompatActivity {
                 case BluetoothLEManager.BLE_SCAN_STOP:
                     if(bleDevice != null){
                         bleManager.connectDevice(bleDevice);
+                        pgbLoading.setVisibility(View.VISIBLE);
                     }else{
                         rcvDeviceList.setEnabled(true);
                         pgbLoading.setVisibility(View.GONE);
@@ -150,9 +157,10 @@ public class ConnectActivity extends AppCompatActivity {
                     isConnected = true;
                     break;
                 case BluetoothLEManager.BLE_DISCONNECT_DEVICE:
+                    tvStateMsg.setText("디바이스 연결이 종료되었습니다.");
                     rcvDeviceList.setEnabled(true);
                     isConnected = false;
-                    pgbLoading.setVisibility(View.GONE);
+//                    pgbLoading.setVisibility(View.GONE);
                     break;
             }
         }

@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +26,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class MeasureActivity extends AppCompatActivity {
+
+    private static final String TAG = MeasureActivity.class.getSimpleName();
 
     private Button btnZeroSetting, btnMeasure, btnControlHeight;
     private TextView tvFrontLeftValue, tvFrontRightValue, tvBackLeftValue, tvBackRightValue;
@@ -186,7 +189,7 @@ public class MeasureActivity extends AppCompatActivity {
                 view.setTextColor(Color.GREEN);
                 break;
             case 1:
-                view.setTextColor(Color.YELLOW);
+                view.setTextColor(Color.rgb(255,215,0));
                 break;
             case 2:
                 view.setTextColor(Color.rgb(255,140,0));
