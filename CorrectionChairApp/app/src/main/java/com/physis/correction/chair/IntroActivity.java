@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import com.physis.correction.chair.ble.BluetoothLEManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,13 +24,16 @@ public class IntroActivity extends AppCompatActivity {
 
     // region Check Permissions && Request Permissions
     private static final int REQ_APP_PERMISSION = 1500;
-    private List<String> appPermissions
-            = Collections.singletonList(Manifest.permission.ACCESS_COARSE_LOCATION);
+    private String[] appPermissions = {
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+    };
 
     private static final int INTENT_DELAY = 1500;
 
     private void checkPermissions(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // 권한 요청 목록 생성
             final List<String> reqPermissions = new ArrayList<>();
             for(String permission : appPermissions){
@@ -43,9 +48,7 @@ public class IntroActivity extends AppCompatActivity {
             }else{
                 requestPermissions(reqPermissions.toArray(new String[reqPermissions.size()]), REQ_APP_PERMISSION);
             }
-        }else{
-            nextActivity();
-        }
+
     }
 
     @Override

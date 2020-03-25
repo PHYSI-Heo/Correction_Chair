@@ -37,9 +37,10 @@ public class MeasureActivity extends AppCompatActivity {
     private BluetoothLEManager bleManager;
 
     private String deviceAddress;
-    private int flValue, frValue, blValue, brValue;
-    private float flWeight, frWeight, blWeight, brWeight;
-    private List<Integer> valueArray = new LinkedList<>();
+    private int initflValue, initfrValue, initblValue, initbrValue;
+    private float flValue, frValue, blValue, brValue;
+    private double flWeight, frWeight, blWeight, brWeight;
+    private List<Float> valueArray = new LinkedList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,8 +91,7 @@ public class MeasureActivity extends AppCompatActivity {
                     bleManager.writeCharacteristic("SM");
                     break;
                 case R.id.btn_control_height:
-                    String pressure = ( 2 - flWeight ) + ","  + ( 2 - frWeight )
-                            + "," + ( 2 - blWeight ) + "," + ( 2 - brWeight );
+                    String pressure = flWeight+ ","  + frWeight + "," + blWeight + "," + brWeight;
                     startActivity(new Intent(MeasureActivity.this, ControlActivity.class)
                             .putExtra("ADDR", deviceAddress)
                             .putExtra("PRESSUREs", pressure));
@@ -122,6 +122,7 @@ public class MeasureActivity extends AppCompatActivity {
     }
 
     private void initPressureState(){
+        initflValue = initfrValue = initblValue = initbrValue = 0;
         flValue = frValue = blValue = brValue = 0;
         flWeight = frWeight = blWeight = brWeight = 1;
         tvFrontLeftValue.setText("0 atm");
@@ -143,10 +144,15 @@ public class MeasureActivity extends AppCompatActivity {
         if(maxPressure == 0)
             return;
 
-        flWeight = Math.round((flValue / maxPressure * 10)/10.0);
-        frWeight = Math.round((frValue / maxPressure * 10)/10.0);
-        blWeight = Math.round((blValue / maxPressure * 10)/10.0);
-        brWeight = Math.round((brValue / maxPressure * 10)/10.0);
+//        flWeight = 1 - flValue / maxPressure;
+//        frWeight = 1 -  frValue / maxPressure;
+//        blWeight = 1 - blValue / maxPressure;
+//        brWeight = 1 -  brValue / maxPressure;
+
+        flWeight =  Math.round((flValue / maxPressure) * 10) / 10.0;
+        frWeight =  Math.round((frValue / maxPressure) * 10) / 10.0;
+        blWeight =  Math.round((blValue / maxPressure) * 10) / 10.0;
+        brWeight =  Math.round((brValue / maxPressure) * 10) / 10.0;
 
         tvFrontLeftValue.append(" (" + flWeight + ")");
         tvFrontRightValue.append(" (" + frWeight + ")");
@@ -161,10 +167,18 @@ public class MeasureActivity extends AppCompatActivity {
         if(values.length != 4)
             return;
 
-        flValue = Integer.valueOf(values[0]);
-        frValue = Integer.valueOf(values[1]);
-        blValue = Integer.valueOf(values[2]);
-        brValue = Integer.valueOf(values[3]);
+        if(initflValue == 0 && initfrValue == 0 && initblValue == 0 && initbrValue == 0){
+            initflValue = Integer.valueOf(values[0]);
+            initfrValue = Integer.valueOf(values[1]);
+            initblValue = Integer.valueOf(values[2]);
+            initbrValue = Integer.valueOf(values[3]);
+            return;
+        }
+
+        flValue = Math.abs(initflValue - Integer.valueOf(values[0]));
+        frValue = Math.abs(initfrValue - Integer.valueOf(values[1]));
+        blValue = Math.abs(initblValue - Integer.valueOf(values[2]));
+        brValue = Math.abs(initbrValue - Integer.valueOf(values[3]));
 
         valueArray.clear();
         valueArray.add(flValue);
@@ -173,13 +187,13 @@ public class MeasureActivity extends AppCompatActivity {
         valueArray.add(brValue);
         Collections.sort(valueArray);
 
-        tvFrontLeftValue.setText(values[0] + " atm");
+        tvFrontLeftValue.setText(flValue + " atm");
         setEffectWeight(valueArray.indexOf(flValue), tvFrontLeftValue);
-        tvFrontRightValue.setText(values[1] + " atm");
+        tvFrontRightValue.setText(frValue + " atm");
         setEffectWeight(valueArray.indexOf(frValue), tvFrontRightValue);
-        tvBackLeftValue.setText(values[2] + " atm");
+        tvBackLeftValue.setText(blValue+ " atm");
         setEffectWeight(valueArray.indexOf(blValue), tvBackLeftValue);
-        tvBackRightValue.setText(values[3] + " atm");
+        tvBackRightValue.setText(brValue + " atm");
         setEffectWeight(valueArray.indexOf(brValue), tvBackRightValue);
     }
 

@@ -82,22 +82,14 @@ public class BluetoothLEManager {
 
     //region    Bluetooth LE Scanner
     private void startBLEScan(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            bluetoothLeScanner.startScan(scanCallback);
-        }else{
-            bluetoothAdapter.startLeScan(bleScanCallback);
-        }
+        bluetoothLeScanner.startScan(scanCallback);
         isScanning = true;
         bleHandler.obtainMessage(BLE_SCAN_START).sendToTarget();
         Log.e(TAG, "# Start Bluetooth LE Scan..");
     }
 
     private void stopBLEScan(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            bluetoothLeScanner.stopScan(scanCallback);
-        }else{
-            bluetoothAdapter.stopLeScan(bleScanCallback);
-        }
+        bluetoothLeScanner.stopScan(scanCallback);
         isScanning = false;
         bleHandler.removeCallbacks(scanStopRunnable);
         bleHandler.obtainMessage(BLE_SCAN_STOP).sendToTarget();
@@ -115,6 +107,7 @@ public class BluetoothLEManager {
     private ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
+            Log.e(TAG, "onScanResult");
             bleScanResult(result.getDevice(), result.getRssi(), result.getScanRecord().getBytes());
         }
         @Override

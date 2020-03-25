@@ -1,20 +1,28 @@
+#include <SoftwareSerial.h>
 
-#define FRONT_LEFT_VALVE  36
-#define FRONT_LEFT_PUMP   42
-#define FRONT_RIGHT_VALVE 37
-#define FRONT_RIGHT_PUMP  43
-#define BACK_LEFT_VALVE   40
-#define BACK_LEFT_PUMP    44
-#define BACK_RIGHT_VALVE  41
-#define BACK_RIGHT_PUMP   45
+#define BLE_RX  4
+#define BLE_TX  3
 
-#define FRONT_LEFT_PRESSURE A10
-#define FRONT_RIGHT_PRESSURE A11
-#define BACK_LEFT_PRESSURE A12
-#define BACK_RIGHT_PRESSURE A13
+#define FRONT_LEFT_VALVE      10 
+#define FRONT_LEFT_PUMP       6 
+#define FRONT_LEFT_PRESSURE   A1
+
+#define FRONT_RIGHT_VALVE     9
+#define FRONT_RIGHT_PUMP      5
+#define FRONT_RIGHT_PRESSURE  A0
+
+#define BACK_LEFT_VALVE       12
+#define BACK_LEFT_PUMP        8
+#define BACK_LEFT_PRESSURE    A3
+
+#define BACK_RIGHT_VALVE      11
+#define BACK_RIGHT_PUMP       7
+#define BACK_RIGHT_PRESSURE   A2
+
+SoftwareSerial bleSerial(BLE_RX, BLE_TX);
 
 String recvData = "";
-long measureTime = 3000;
+long measureTime = 8000;
 
 int PUMP_UP = 1;
 int PUMP_STOP = 2;
@@ -25,7 +33,7 @@ bool flControl, frControl, blControl, brControl;
 
 void setup() {
   Serial.begin(9600);
-  Serial3.begin(9600);
+  bleSerial.begin(9600);
 
   pinMode(FRONT_LEFT_VALVE, OUTPUT);
   pinMode(FRONT_LEFT_PUMP, OUTPUT);
@@ -36,12 +44,12 @@ void setup() {
   pinMode(BACK_RIGHT_VALVE, OUTPUT);
   pinMode(BACK_RIGHT_PUMP, OUTPUT);
 
-  Serial.print(F("Start Loop."));
+  Serial.println(F("Start Loop."));
 }
 
 void loop() {
-  while (Serial3.available()) {
-    char data = Serial3.read();
+  while (bleSerial.available()) {
+    char data = bleSerial.read();
     recvData += data;
     delay(1);
   }
@@ -71,7 +79,7 @@ void loop() {
 }
 
 void sendMessage(String data) {
-  Serial3.print(data);
+  bleSerial.println(data);
 }
 
 void setAirState(int valvePin, int pumpPin, int type) {
@@ -95,7 +103,7 @@ void setZeroPressure() {
   setAirState(FRONT_RIGHT_VALVE, FRONT_RIGHT_PUMP, PUMP_OUT);
   setAirState(BACK_LEFT_VALVE, BACK_LEFT_PUMP, PUMP_OUT);
   setAirState(BACK_RIGHT_VALVE, BACK_RIGHT_PUMP, PUMP_OUT);
-  delay(3000);
+  delay(measureTime);
   Serial.println("# Stop Zero Pressure.");
 }
 
@@ -114,6 +122,7 @@ void startMeasurePressure() {
                   + String(analogRead(FRONT_RIGHT_PRESSURE)) + ","
                   + String(analogRead(BACK_LEFT_PRESSURE)) + ","
                   + String(analogRead(BACK_RIGHT_PRESSURE));
+    Serial.println(data);              
     sendMessage(data.c_str());
     delay(100);
   }
